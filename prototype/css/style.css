@@ -53,6 +53,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 40px;
   width: 100%;
   height: 100%;
 }
@@ -72,12 +73,10 @@ body {
   transform-origin: center center;
 }
 
-/* ---------- Мобильные: телефон во весь экран, без рамки-мокапа ----------
-   position:fixed + left/top 50% + translate(-50%,-50%) в JS (fit) —
-   телефон привязан к центру вьюпорта и не зависит от флекс-центрирования */
+/* ---------- Мобильные: один видимый телефон во весь экран ---------- */
 @media (max-width: 600px), (max-width: 1024px) and (pointer: coarse) {
   body { overflow: hidden; background: var(--bg-page); }
-  .phone {
+  .phone:not([hidden]) {
     position: fixed;
     left: 50%;
     top: 50%;
@@ -86,7 +85,6 @@ body {
     border-radius: 0;
     box-shadow: none;
   }
-  /* оверлей тоже без скругления углов мокапа */
   .sheet-overlay { border-radius: 0; }
 }
 
@@ -698,7 +696,8 @@ body {
 }
 /* Пока шторка выезжает, клик «Настроить» не должен пробивать ползунки */
 .sheet.sheet-entering .slider-track,
-.sheet.sheet-entering .cover-input {
+.sheet.sheet-entering .cover-input,
+.sheet.sheet-entering .slider-row {
   pointer-events: none;
 }
 
@@ -800,12 +799,12 @@ body {
   width: 100%;
 }
 
-/* Трек ползунка: белый, 36px, отдельно от блока с цифрами */
+/* Трек ползунка: 40px, как в макете 2167:6959 */
 .slider-track {
   position: relative;
-  flex: 1 1 0;
+  flex: 1 0 0;
   min-width: 116px;
-  height: 36px;
+  height: 40px;
   border-radius: 8px;
   background: var(--surface);
   border: 1px solid var(--border-disabled);
@@ -817,34 +816,35 @@ body {
 }
 .slider-track.dragging { cursor: grabbing; }
 
+/* Мин. заливка 16×40, накрывает левую рамку */
 .slider-fill {
   position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
+  left: -1px;
+  top: -1px;
   width: 16px;
-  border-radius: 7px;
+  height: 40px;
+  border-radius: 8px;
   background: var(--slider-fill);
   pointer-events: none;
 }
 .slider-knob {
   position: absolute;
-  top: 50%;
-  left: 9px;
+  top: 12px;
+  left: 8px;
   width: 2px;
   height: 16px;
   border-radius: 1px;
   background: var(--knob);
-  transform: translateY(-50%);
+  transform: none;
   pointer-events: none;
 }
 .slider-track.dragging .slider-knob { background: var(--knob-active); }
 
-/* Правый блок с цифрами — тап открывает клавиатуру */
+/* Правый блок с цифрами — 98×40, тап открывает клавиатуру */
 .cover-input {
-  flex: 0 0 102px;
-  width: 102px;
-  height: 36px;
+  flex: 0 0 98px;
+  width: 98px;
+  height: 40px;
   padding: 0 12px;
   border-radius: 8px;
   background: var(--surface);
@@ -863,6 +863,9 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: flex-end;
+}
+.cover-input-unit {
+  color: var(--text-2);
 }
 .cover-input.editing {
   border: 2px solid var(--info);
@@ -1124,4 +1127,124 @@ body {
   align-items: flex-end;
   justify-content: center;
   padding-bottom: 8px;
+}
+
+/* ============================================================
+   Прототип B: совмещённые строки 56px + блюр вокруг при драге
+   макеты 2167:7112 (покой) и 2167:7313 (зажим)
+   ============================================================ */
+.proto-row .sheet-scroll { position: relative; }
+.proto-row .sheet-title,
+.proto-row .sheet-total {
+  position: relative;
+  z-index: 1;
+}
+.proto-row .sheet-price,
+.proto-row .sheet-buttons {
+  position: relative;
+  z-index: 6;
+}
+.proto-row .sheet-title { margin-top: 20px; }
+.proto-row .sheet-group:first-of-type { margin-top: 20px; }
+.proto-row .sheet-group + .sheet-group { margin-top: 20px; }
+.proto-row .sheet-total { margin-top: 20px; }
+.proto-row .sheet-divider { margin-top: 20px; }
+.proto-row .sheet-price { margin-top: 24px; }
+
+.proto-row .sheet-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.proto-row .sheet-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.proto-row .slider-row {
+  position: relative;
+  z-index: 1;
+  height: 56px;
+  border-radius: 12px;
+  background: var(--surface-3);
+  border: 1px solid var(--border-disabled);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+}
+.proto-row .slider-row.dragging {
+  z-index: 10;
+  cursor: grabbing;
+}
+
+.proto-row .slider-fill {
+  left: 1px;
+  top: 1px;
+  bottom: 1px;
+  width: 16px;
+  height: auto;
+  border-radius: 11px;
+}
+.proto-row .slider-knob {
+  top: 50%;
+  left: 8px;
+  width: 2px;
+  height: 16px;
+  border-radius: 1px;
+  transform: translateY(-50%);
+}
+.proto-row .slider-row.dragging .slider-knob { background: var(--knob-active); }
+
+.proto-row .slider-label {
+  position: relative;
+  z-index: 1;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 18px;
+  letter-spacing: -0.28px;
+  color: var(--text);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.proto-row .slider-value {
+  position: relative;
+  z-index: 1;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: -0.32px;
+  color: var(--text);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  text-decoration-skip-ink: none;
+}
+
+/* Блюр вокруг активного ползунка: до разделителя перед «Стоимость» */
+.proto-row .sheet-focus {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 0;
+  z-index: 5;
+  background: rgba(255, 255, 255, 0.5);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  border-radius: 16px;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.18s ease, visibility 0.18s ease;
+}
+.proto-row .sheet-focus.on {
+  opacity: 1;
+  visibility: visible;
 }

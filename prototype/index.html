@@ -4,16 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Страхование квартиры — кликабельный прототип</title>
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=4">
 </head>
 <body>
 
 <!-- Десктопное окружение: телефон в рамке -->
 <div class="stage">
-  <div class="phone" id="phone">
+  <div class="phone proto-split" id="phone-a">
 
     <!-- ============ ЭКРАН 1 (статичный) ============ -->
-    <div class="screen" id="screen1">
+    <div class="screen">
 
       <!-- iOS Status bar -->
       <div class="statusbar">
@@ -36,7 +36,7 @@
         <div class="top-block">
 
           <div class="top-row">
-            <div class="logo" id="logo">
+            <div class="logo">
               <img class="logo-img" src="assets/logo.png" alt="">
             </div>
             <div class="top-title">
@@ -98,7 +98,7 @@
                 <div class="breakdown-row"><span>Ущерб соседям</span><span>300 000 ₽</span></div>
                 <div class="breakdown-row"><span>Стены и перекрытия</span><span>400 000 ₽</span></div>
               </div>
-              <button type="button" class="btn-customize" id="btn-open-sheet">Настроить страховку</button>
+              <button type="button" class="btn-customize js-open-sheet">Настроить страховку</button>
             </div>
 
             <!-- Максимальная -->
@@ -174,13 +174,13 @@
     </div>
 
     <!-- ============ БОТТОМ-ШИТ (экран 2/3) ============ -->
-    <div class="sheet-layer" id="sheet-layer" hidden>
-      <div class="sheet-overlay" id="sheet-overlay"></div>
-      <div class="sheet" id="sheet">
+    <div class="sheet-layer js-sheet-layer" hidden>
+      <div class="sheet-overlay js-sheet-overlay"></div>
+      <div class="sheet js-sheet">
 
         <div class="sheet-handle"><span class="sheet-handle-bar"></span></div>
 
-        <div class="sheet-scroll" id="sheet-scroll">
+        <div class="sheet-scroll js-sheet-scroll">
 
           <h1 class="sheet-title">Настройка страховки</h1>
 
@@ -196,7 +196,7 @@
                     <div class="slider-fill"></div>
                     <div class="slider-knob"></div>
                   </div>
-                  <button type="button" class="cover-input" data-value>3 500 000 ₽</button>
+                  <button type="button" class="cover-input" data-value><span class="cover-input-num">3,5</span>&nbsp;<span class="cover-input-unit">млн ₽</span></button>
                 </div>
               </div>
 
@@ -207,7 +207,7 @@
                     <div class="slider-fill"></div>
                     <div class="slider-knob"></div>
                   </div>
-                  <button type="button" class="cover-input" data-value>2 500 000 ₽</button>
+                  <button type="button" class="cover-input" data-value><span class="cover-input-num">2,5</span>&nbsp;<span class="cover-input-unit">млн ₽</span></button>
                 </div>
               </div>
 
@@ -218,7 +218,7 @@
                     <div class="slider-fill"></div>
                     <div class="slider-knob"></div>
                   </div>
-                  <button type="button" class="cover-input" data-value>1 500 000 ₽</button>
+                  <button type="button" class="cover-input" data-value><span class="cover-input-num">1,5</span>&nbsp;<span class="cover-input-unit">млн ₽</span></button>
                 </div>
               </div>
 
@@ -237,8 +237,280 @@
                     <div class="slider-fill"></div>
                     <div class="slider-knob"></div>
                   </div>
-                  <button type="button" class="cover-input" data-value>1 100 000 ₽</button>
+                  <button type="button" class="cover-input" data-value><span class="cover-input-num">1,1</span>&nbsp;<span class="cover-input-unit">млн ₽</span></button>
                 </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="sheet-total">
+            <div class="sheet-total-row">
+              <span>Общая страховая сумма</span>
+              <span class="sheet-total-value" data-total>10,7 млн ₽</span>
+            </div>
+            <div class="sheet-breakdown">
+              <div class="sheet-breakdown-row"><span>Ваша недвижимость</span><span data-realty>9,6 млн ₽</span></div>
+              <div class="sheet-breakdown-row"><span>Ущерб соседям</span><span data-liability>1,1 млн ₽</span></div>
+            </div>
+          </div>
+
+          <div class="sheet-divider js-sheet-divider"></div>
+
+          <!-- Стоимость и кнопки — часть скролл-контента, ничего не зафиксировано -->
+          <div class="sheet-price">
+            <span>Стоимость</span>
+            <span class="sheet-price-value"><span data-price>29 961 ₽</span><span class="sheet-price-per">/год</span></span>
+          </div>
+
+          <div class="sheet-buttons">
+            <button type="button" class="btn-secondary js-reset">Сбросить</button>
+            <button type="button" class="btn-primary js-apply">Применить</button>
+          </div>
+
+        </div>
+
+        <div class="sheet-home"><span class="sheet-home-bar"></span></div>
+
+      </div>
+    </div>
+
+    <!-- Цифровая клавиатура iPhone: выезжает по тапу на блок с суммой -->
+    <div class="ios-kb-layer js-kb-layer" aria-hidden="true">
+      <div class="ios-kb-dismiss js-kb-dismiss"></div>
+      <div class="ios-kb">
+        <div class="ios-kb-bar">
+          <button type="button" class="ios-kb-done js-kb-done">Готово</button>
+        </div>
+        <div class="ios-kb-pad">
+          <button type="button" class="ios-kb-key" data-key="1">1</button>
+          <button type="button" class="ios-kb-key" data-key="2">2</button>
+          <button type="button" class="ios-kb-key" data-key="3">3</button>
+          <button type="button" class="ios-kb-key" data-key="4">4</button>
+          <button type="button" class="ios-kb-key" data-key="5">5</button>
+          <button type="button" class="ios-kb-key" data-key="6">6</button>
+          <button type="button" class="ios-kb-key" data-key="7">7</button>
+          <button type="button" class="ios-kb-key" data-key="8">8</button>
+          <button type="button" class="ios-kb-key" data-key="9">9</button>
+          <button type="button" class="ios-kb-key" data-key="comma">,</button>
+          <button type="button" class="ios-kb-key" data-key="0">0</button>
+          <button type="button" class="ios-kb-key ios-kb-key-back" data-key="back" aria-label="Удалить">
+            <svg width="23" height="17" viewBox="0 0 23 17" fill="none" aria-hidden="true">
+              <path d="M8.2 1.25h11.05c1.8 0 3.25 1.45 3.25 3.25v8c0 1.8-1.45 3.25-3.25 3.25H8.2L1.4 8.5 8.2 1.25z" stroke="#000" stroke-width="1.4" stroke-linejoin="round"/>
+              <path d="M10.35 5.2l5.3 5.3M15.65 5.2l-5.3 5.3" stroke="#000" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="ios-kb-home"><span class="sheet-home-bar"></span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="phone proto-row" id="phone-b" hidden>
+
+    <div class="screen">
+
+      <div class="statusbar">
+        <span class="statusbar-time">9:41</span>
+        <img class="statusbar-icons" src="assets/statusbar.svg" alt="">
+      </div>
+
+      <div class="navbar">
+        <div class="navbar-btn"><img src="assets/back24.svg" alt="Назад"></div>
+        <div class="navbar-title">
+          <span class="navbar-title-main">Настройка страховки</span>
+          <span class="navbar-title-sub">Моя квартирочка</span>
+        </div>
+        <div class="navbar-btn"></div>
+      </div>
+
+      <section class="card">
+        <div class="top-block">
+
+          <div class="top-row">
+            <div class="logo">
+              <img class="logo-img" src="assets/logo.png" alt="">
+            </div>
+            <div class="top-title">
+              <span class="top-title-caption">Программа</span>
+              <span class="top-title-name">Защита квартиры</span>
+            </div>
+          </div>
+
+          <div class="top-row">
+            <span class="icon-chip"><img src="assets/shield.svg" alt=""></span>
+            <p class="top-text">От пожара, залива, БПЛА и <span class="link-dotted">других</span></p>
+          </div>
+
+          <div class="top-row">
+            <span class="icon-chip"><img src="assets/build.svg" alt=""></span>
+            <p class="top-text">Дополняет ипотечный полис</p>
+          </div>
+
+        </div>
+
+        <div class="settings-block">
+          <h2 class="h2">Период и сумма страхования</h2>
+
+          <div class="segments">
+            <button type="button" class="segment selected">
+              <span>1 год</span>
+              <span class="badge badge-success">–13%</span>
+            </button>
+            <button type="button" class="segment">1 месяц</button>
+            <button type="button" class="segment">
+              <span>3 месяца</span>
+              <span class="badge">–4%</span>
+            </button>
+          </div>
+
+          <div class="tariff-list">
+
+            <div class="tariff">
+              <div class="tariff-left">
+                <span class="tariff-label">Минимальная <img src="assets/info.svg" alt=""></span>
+                <span class="tariff-amount">1 400 000 ₽</span>
+              </div>
+              <div class="tariff-cost"><span>–4 711 ₽</span><span class="tariff-cost-per">/год</span></div>
+            </div>
+
+            <div class="tariff optimal">
+              <div class="tariff-optimal-row">
+                <div class="tariff-left">
+                  <span class="tariff-label">Оптимальная <img src="assets/info.svg" alt=""></span>
+                  <span class="tariff-amount">10 700 000 ₽</span>
+                </div>
+                <span class="tariff-chosen">Выбрано</span>
+              </div>
+              <div class="breakdown">
+                <div class="breakdown-row"><span>Отделка, коммуникации, окна и&nbsp;двери</span><span>400 000 ₽</span></div>
+                <div class="breakdown-row"><span>Мебель, техника и ваши вещи</span><span>200 000 ₽</span></div>
+                <div class="breakdown-row"><span>Ущерб соседям</span><span>300 000 ₽</span></div>
+                <div class="breakdown-row"><span>Стены и перекрытия</span><span>400 000 ₽</span></div>
+              </div>
+              <button type="button" class="btn-customize js-open-sheet">Настроить страховку</button>
+            </div>
+
+            <div class="tariff">
+              <div class="tariff-left">
+                <span class="tariff-label">Максимальная <img src="assets/info.svg" alt=""></span>
+                <span class="tariff-amount">28 400 000 ₽</span>
+              </div>
+              <div class="tariff-cost"><span>+8 554 ₽</span><span class="tariff-cost-per">/год</span></div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <section class="card card-docs">
+        <h2 class="h2">Полные условия и образец полиса</h2>
+        <div class="doc-row">
+          <span class="icon-chip"><img src="assets/file.svg" alt=""></span>
+          <span class="doc-link">Документ со всеми условиями</span>
+        </div>
+        <div class="doc-row">
+          <span class="icon-chip"><img src="assets/filefav.svg" alt=""></span>
+          <span class="doc-link">Образец полиса</span>
+        </div>
+      </section>
+
+      <section class="card card-pay">
+        <h2 class="h2">Страховой полис</h2>
+
+        <div class="pay-row">
+          <div class="pay-info">
+            <span class="pay-label">Срок действия</span>
+            <span class="pay-value">1 год</span>
+          </div>
+        </div>
+
+        <div class="pay-row">
+          <div class="pay-info">
+            <span class="pay-label">Начнёт действовать <img src="assets/info.svg" alt=""></span>
+            <div class="pay-value-row">
+              <span class="pay-value">25 июля 2025</span>
+              <span class="pay-action">Изменить</span>
+            </div>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="pay-sum">
+          <span class="h2">Стоимость</span>
+          <div class="pay-prices">
+            <span class="pay-old">34 437₽</span>
+            <span class="pay-new">29 961 ₽</span>
+          </div>
+        </div>
+
+        <div class="pay-line"><span>Скидка –13% на год</span><span class="c-success">–500 ₽</span></div>
+        <div class="pay-line"><span>Промокод</span><span class="c-info">Добавить</span></div>
+
+        <button type="button" class="btn-primary">К оформлению</button>
+      </section>
+
+      <div class="footer">
+        <p>Сервис предоставляется ООО СК «Сбербанк страхование». Подробнее об условиях и ограничениях на <span class="footer-link">sberbankins.ru</span></p>
+        <p>Erid: XXX</p>
+      </div>
+
+    </div>
+
+    <div class="sheet-layer js-sheet-layer" hidden>
+      <div class="sheet-overlay js-sheet-overlay"></div>
+      <div class="sheet js-sheet">
+
+        <div class="sheet-handle"><span class="sheet-handle-bar"></span></div>
+
+        <div class="sheet-scroll js-sheet-scroll">
+          <div class="sheet-focus js-sheet-focus"></div>
+
+          <h1 class="sheet-title">Настройка страховки</h1>
+
+          <div class="sheet-group">
+            <div class="sheet-section-title">Страхование квартиры</div>
+            <div class="sheet-rows">
+
+              <div class="slider-row" data-slider="finish">
+                <div class="slider-fill"></div>
+                <div class="slider-knob"></div>
+                <span class="slider-label">Отделка, окна, двери <span class="link-dotted">+1</span></span>
+                <span class="slider-value" data-value>3 500 000 ₽</span>
+              </div>
+
+              <div class="slider-row" data-slider="furniture">
+                <div class="slider-fill"></div>
+                <div class="slider-knob"></div>
+                <span class="slider-label">Мебель, техника <span class="link-dotted">+1</span></span>
+                <span class="slider-value" data-value>2 500 000 ₽</span>
+              </div>
+
+              <div class="slider-row" data-slider="walls">
+                <div class="slider-fill"></div>
+                <div class="slider-knob"></div>
+                <span class="slider-label">Стены и перекрытия</span>
+                <span class="slider-value" data-value>1 500 000 ₽</span>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="sheet-group">
+            <div class="sheet-section-title">
+              Гражданская ответственность
+              <img src="assets/info.svg" alt="">
+            </div>
+            <div class="sheet-rows">
+
+              <div class="slider-row" data-slider="neighbors">
+                <div class="slider-fill"></div>
+                <div class="slider-knob"></div>
+                <span class="slider-label">Ущерб соседям</span>
+                <span class="slider-value" data-value>1 100 000 ₽</span>
               </div>
 
             </div>
@@ -255,17 +527,16 @@
             </div>
           </div>
 
-          <div class="sheet-divider" id="sheet-divider"></div>
+          <div class="sheet-divider js-sheet-divider"></div>
 
-          <!-- Стоимость и кнопки — часть скролл-контента, ничего не зафиксировано -->
           <div class="sheet-price">
             <span>Стоимость</span>
             <span class="sheet-price-value"><span data-price>29 961 ₽</span><span class="sheet-price-per">/год</span></span>
           </div>
 
           <div class="sheet-buttons">
-            <button type="button" class="btn-secondary" id="btn-reset">Сбросить</button>
-            <button type="button" class="btn-primary" id="btn-apply">Применить</button>
+            <button type="button" class="btn-secondary js-reset">Сбросить</button>
+            <button type="button" class="btn-primary js-apply">Применить</button>
           </div>
 
         </div>
@@ -275,39 +546,9 @@
       </div>
     </div>
 
-    <!-- Цифровая клавиатура iPhone: выезжает по тапу на блок с суммой -->
-    <div class="ios-kb-layer" id="kb-layer" aria-hidden="true">
-      <div class="ios-kb-dismiss" id="kb-dismiss"></div>
-      <div class="ios-kb" id="ios-kb">
-        <div class="ios-kb-bar">
-          <button type="button" class="ios-kb-done" id="kb-done">Готово</button>
-        </div>
-        <div class="ios-kb-pad">
-          <button type="button" class="ios-kb-key" data-key="1">1</button>
-          <button type="button" class="ios-kb-key" data-key="2">2</button>
-          <button type="button" class="ios-kb-key" data-key="3">3</button>
-          <button type="button" class="ios-kb-key" data-key="4">4</button>
-          <button type="button" class="ios-kb-key" data-key="5">5</button>
-          <button type="button" class="ios-kb-key" data-key="6">6</button>
-          <button type="button" class="ios-kb-key" data-key="7">7</button>
-          <button type="button" class="ios-kb-key" data-key="8">8</button>
-          <button type="button" class="ios-kb-key" data-key="9">9</button>
-          <span class="ios-kb-key ios-kb-key-ghost" aria-hidden="true"></span>
-          <button type="button" class="ios-kb-key" data-key="0">0</button>
-          <button type="button" class="ios-kb-key ios-kb-key-back" data-key="back" aria-label="Удалить">
-            <svg width="23" height="17" viewBox="0 0 23 17" fill="none" aria-hidden="true">
-              <path d="M8.2 1.25h11.05c1.8 0 3.25 1.45 3.25 3.25v8c0 1.8-1.45 3.25-3.25 3.25H8.2L1.4 8.5 8.2 1.25z" stroke="#000" stroke-width="1.4" stroke-linejoin="round"/>
-              <path d="M10.35 5.2l5.3 5.3M15.65 5.2l-5.3 5.3" stroke="#000" stroke-width="1.4" stroke-linecap="round"/>
-            </svg>
-          </button>
-        </div>
-        <div class="ios-kb-home"><span class="sheet-home-bar"></span></div>
-      </div>
-    </div>
-
   </div>
 </div>
 
-<script src="js/app.js"></script>
+<script src="js/app.js?v=4"></script>
 </body>
 </html>
