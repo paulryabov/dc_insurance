@@ -1,0 +1,1127 @@
+/* ============================================================
+   Кликабельный прототип — Страхование квартиры (MYHOUSE-7341)
+   Вьюпорт телефона: 375 x 812, скруглённые углы
+   ============================================================ */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  /* Цвета дизайн-системы (из Figma) */
+  --bg-page: #eceef0;
+  --surface: #ffffff;
+  --surface-2: #f0f5f8;
+  --surface-3: #f4f5f6;
+  --text: #262626;
+  --text-2: #738295;
+  --text-success: #009532;
+  --brand: #009e36;
+  --border-input: #a8b4bd;
+  --border-disabled: #e0e4e9;
+  --divider: #d5d8dc;
+  --info: #1175da;
+  --success-bg: #e5f8ec;
+  --success-border: #00a739;
+  --btn-secondary: #e7eef3;
+  --overlay: rgba(0, 0, 0, 0.64);
+
+  /* Слайдеры */
+  --slider-fill: #e0e4e9;
+  --knob: #c8ceda;
+  --knob-active: #8593a5;
+
+  --font-display: "SB Sans Display", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-text: "SB Sans Text", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-text);
+  color: var(--text);
+  background: radial-gradient(1200px 800px at 50% 20%, #dfe6ea 0%, #aeb7c2 55%, #8d97a4 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* ---------- Рамка телефона ---------- */
+.stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.phone {
+  position: relative;
+  width: 375px;
+  height: 812px;
+  background: var(--bg-page);
+  border-radius: 44px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 10px #1c1c22,
+    0 0 0 12px #3a3a44,
+    0 30px 70px rgba(0, 0, 0, 0.45),
+    0 8px 24px rgba(0, 0, 0, 0.3);
+  transform-origin: center center;
+}
+
+/* ---------- Мобильные: телефон во весь экран, без рамки-мокапа ----------
+   position:fixed + left/top 50% + translate(-50%,-50%) в JS (fit) —
+   телефон привязан к центру вьюпорта и не зависит от флекс-центрирования */
+@media (max-width: 600px), (max-width: 1024px) and (pointer: coarse) {
+  body { overflow: hidden; background: var(--bg-page); }
+  .phone {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    margin: 0;
+    transform-origin: center center;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  /* оверлей тоже без скругления углов мокапа */
+  .sheet-overlay { border-radius: 0; }
+}
+
+/* ---------- Экран 1 ---------- */
+.screen {
+  height: 100%;
+  background: var(--bg-page);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 40px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+/* скрыть боковой скроллбар, чтобы не съедал ширину экрана */
+.screen::-webkit-scrollbar { width: 0; height: 0; }
+
+/* iOS Status bar */
+.statusbar {
+  flex: 0 0 44px;
+  height: 44px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px 14.67px 0 21px;
+  background: var(--bg-page);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+.statusbar-time {
+  font-family: var(--font-text);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: -0.28px;
+  color: var(--text);
+  line-height: 1;
+}
+.statusbar-icons {
+  width: 66.66px;
+  height: 11.34px;
+  margin-top: 1px;
+}
+
+/* Navbar */
+.navbar {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  background: var(--bg-page);
+  position: sticky;
+  top: 44px;
+  z-index: 5;
+}
+.navbar-btn {
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.navbar-btn img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+.navbar-title {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+.navbar-title-main {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: -0.32px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.navbar-title-sub {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+  letter-spacing: -0.28px;
+  color: var(--text-2);
+}
+
+/* Карточки */
+.card {
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin: 0 8px;
+}
+
+/* Верхний блок */
+.top-block {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.top-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+.top-row + .top-row {
+  gap: 8px;
+}
+.logo {
+  flex: 0 0 52px;
+  width: 52px;
+  height: 52px;
+  position: relative;
+  border-radius: 50%;
+  overflow: hidden;
+}
+/* Собранная цельная картинка логотипа */
+.logo-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.top-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.top-title-caption {
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: -0.32px;
+  color: var(--text);
+  white-space: nowrap;
+}
+.top-title-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 32px;
+  color: var(--text);
+  white-space: nowrap;
+}
+.top-text {
+  flex: 1;
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: -0.32px;
+  color: var(--text);
+  min-width: 0;
+}
+
+/* Иконки в кружках */
+.icon-chip {
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  border-radius: 20px;
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-chip img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+/* Пунктирная ссылка */
+.link-dotted {
+  color: var(--text-2);
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+
+/* Заголовки */
+.h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 28px;
+  color: var(--text);
+}
+
+/* ---------- Настройка: сегменты ---------- */
+.settings-block {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.segments {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  width: 100%;
+  /* как в макете: у селект-кнопок есть нижний паддинг 4px */
+  padding-bottom: 4px;
+}
+
+/* Список тарифов: между карточками отступ 8px (в макете gap 8) */
+.tariff-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+.segment {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 11px 8px;
+  flex: 0 0 auto;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border-input);
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+  letter-spacing: -0.28px;
+  color: var(--text);
+  white-space: nowrap;
+  cursor: default;
+}
+.segment.selected {
+  border: 2px solid var(--success-border);
+}
+.badge {
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 12px;
+  background: #f0f1f4;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: -0.12px;
+  color: var(--text);
+}
+.badge-success {
+  background: var(--success-bg);
+  color: var(--text-success);
+}
+
+/* ---------- Тарифы ---------- */
+.tariff {
+  background: var(--surface-2);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+.tariff-left {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tariff-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+  letter-spacing: -0.28px;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+.tariff-label img {
+  width: 15px;
+  height: 15px;
+}
+.tariff-amount {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: -0.32px;
+  color: var(--text);
+  white-space: nowrap;
+}
+.tariff-cost {
+  display: flex;
+  align-items: baseline;
+  font-size: 14px;
+  letter-spacing: -0.28px;
+  white-space: nowrap;
+}
+.tariff-cost > span:first-child {
+  font-weight: 500;
+  line-height: 18px;
+  color: var(--text);
+}
+.tariff-cost-per {
+  font-family: var(--font-text);
+  color: var(--text-2);
+  line-height: 18px;
+}
+
+/* Оптимальная — выбрана */
+.tariff.optimal {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  background: var(--success-bg);
+  border: 2px solid var(--success-border);
+  padding: 16px;
+}
+.tariff-optimal-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+.tariff-chosen {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+  letter-spacing: -0.28px;
+  color: var(--text);
+  white-space: nowrap;
+}
+.breakdown {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.breakdown-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: -0.12px;
+}
+.breakdown-row span:first-child {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--text-2);
+}
+.breakdown-row span:last-child {
+  color: var(--text);
+  white-space: nowrap;
+}
+
+/* Кнопка «Настроить страховку» (единственная активная на экране 1) */
+.btn-customize {
+  width: 100%;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 8px;
+  background: var(--surface);
+  border: none;
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+  letter-spacing: -0.28px;
+  color: var(--text);
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.btn-customize:active { transform: scale(0.98); }
+
+/* ---------- Документы ---------- */
+.card-docs { gap: 16px; }
+.doc-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.doc-link {
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: -0.32px;
+  color: var(--text);
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+
+/* ---------- Оплата ---------- */
+.card-pay { gap: 16px; }
+.pay-row { display: flex; }
+.pay-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.pay-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: -0.32px;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+.pay-label img { width: 15px; height: 15px; }
+.pay-value {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: -0.32px;
+  color: var(--text);
+  white-space: nowrap;
+}
+.pay-value-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.pay-action {
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: -0.32px;
+  color: var(--info);
+}
+.divider {
+  border: none;
+  height: 1px;
+  background: var(--divider);
+}
+.pay-sum {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding-top: 4px;
+}
+.pay-prices {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.pay-old {
+  position: relative;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: -0.32px;
+  color: var(--text-2);
+  opacity: 0.7;
+}
+.pay-old::after {
+  content: "";
+  position: absolute;
+  left: -2px;
+  right: -2px;
+  top: 50%;
+  height: 1px;
+  background: var(--border-input);
+  transform: rotate(-6deg);
+}
+.pay-new {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 28px;
+  color: var(--text);
+  white-space: nowrap;
+}
+.pay-line {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.pay-line > span:first-child {
+  flex: 1;
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: -0.32px;
+  color: var(--text);
+}
+.pay-line .c-success {
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: -0.32px;
+  color: var(--text-success);
+  white-space: nowrap;
+}
+.pay-line .c-info {
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: -0.32px;
+  color: var(--info);
+  white-space: nowrap;
+}
+
+/* Первичная кнопка */
+.btn-primary {
+  height: 56px;
+  min-height: 56px;
+  border-radius: 8px;
+  border: none;
+  background: var(--brand);
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+  letter-spacing: -0.28px;
+  color: #fff;
+  cursor: pointer;
+  transition: filter 0.12s ease, transform 0.12s ease;
+}
+.btn-primary:hover { filter: brightness(1.05); }
+.btn-primary:active { transform: scale(0.985); }
+
+/* ---------- Футер ---------- */
+.footer {
+  padding: 4px 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  margin: 0 8px;
+}
+.footer p {
+  font-size: 14px;
+  line-height: 18px;
+  letter-spacing: -0.28px;
+  color: var(--text-2);
+  text-align: center;
+}
+.footer .footer-link {
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ============================================================
+   БОТТОМ-ШИТ (экран 2 / 3)
+   ============================================================ */
+.sheet-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.sheet-layer[hidden] { display: none; }
+
+.sheet-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--overlay);
+  border-radius: 44px;
+  cursor: pointer;
+}
+
+.sheet {
+  position: relative;
+  flex: 0 0 720px;
+  height: 720px;
+  background: var(--surface);
+  border-radius: 24px 24px 0 0;
+  overflow: hidden;
+  animation: sheet-up 0.34s cubic-bezier(0.32, 0.72, 0, 1);
+}
+/* Тонкий индикатор-полоска вверху шторки: скроллится вместе с контентом,
+   прижата к самому верху (часть листа, но не «закреплена») */
+.sheet-handle {
+  height: 25px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 6px;
+  background: var(--surface);
+  position: relative;
+  z-index: 1;
+}
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+/* Пока шторка выезжает, клик «Настроить» не должен пробивать ползунки */
+.sheet.sheet-entering .slider-track,
+.sheet.sheet-entering .cover-input {
+  pointer-events: none;
+}
+
+.sheet-handle-bar {
+  width: 52px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--divider);
+}
+
+.sheet-title {
+  flex: 0 0 auto;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 32px;
+  color: var(--text);
+  margin-top: 20px;
+}
+
+/* Весь контент листа скроллится одним списком: заголовок, ползунки,
+   итоги, разделитель, «Стоимость» и кнопки — ничто не зафиксировано.
+   Зафиксирован только индикатор «домой» внизу. Контент растягивается
+   на высоту шторки (min-height:100%), поэтому на высоких экранах
+   пустого места внизу нет, а на экранах меньшей высоты реально скроллится.
+   Расстояния повторяют прежние замеры. */
+.sheet-scroll {
+  height: calc(100% - 25px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  padding: 0 16px;
+  scrollbar-width: none;
+}
+.sheet-scroll::-webkit-scrollbar { width: 0; height: 0; }
+/* Гарантированный запас под кнопками: меньше дробного расчёта, даёт
+   реальный скролл на больших экранах и отступ внизу как в макете */
+.sheet-scroll { padding-bottom: 28px; }
+.sheet-scroll > * { flex: 0 0 auto; }
+
+.sheet-title { margin-top: 20px; }
+.sheet-card:first-of-type { margin-top: 20px; }
+.sheet-card + .sheet-card { margin-top: 20px; }
+.sheet-total { margin-top: 20px; }
+.sheet-divider { margin-top: 20px; }
+.sheet-price { margin-top: 20px; }
+.sheet-buttons { padding-top: 24px; }
+
+/* Карточка группы покрытий (макет 2163:5901) */
+.sheet-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--surface-3);
+}
+.cover-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.sheet-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: -0.32px;
+  color: var(--text);
+  margin: 0;
+}
+.sheet-section-title img { width: 15px; height: 15px; }
+
+/* ---------- Покрытие: подпись + трек + сумма ---------- */
+.cover-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+.cover-label {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 18px;
+  letter-spacing: -0.28px;
+  color: var(--text);
+  white-space: nowrap;
+}
+.cover-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+/* Трек ползунка: белый, 36px, отдельно от блока с цифрами */
+.slider-track {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 116px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border-disabled);
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+}
+.slider-track.dragging { cursor: grabbing; }
+
+.slider-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 16px;
+  border-radius: 7px;
+  background: var(--slider-fill);
+  pointer-events: none;
+}
+.slider-knob {
+  position: absolute;
+  top: 50%;
+  left: 9px;
+  width: 2px;
+  height: 16px;
+  border-radius: 1px;
+  background: var(--knob);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.slider-track.dragging .slider-knob { background: var(--knob-active); }
+
+/* Правый блок с цифрами — тап открывает клавиатуру */
+.cover-input {
+  flex: 0 0 102px;
+  width: 102px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border-disabled);
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+  letter-spacing: -0.28px;
+  color: var(--text);
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.cover-input.editing {
+  border: 2px solid var(--info);
+  padding: 0 11px;
+}
+.cover-input.selected {
+  background: #e8f1fc;
+}
+.cover-input.editing::after {
+  content: "";
+  display: inline-block;
+  width: 1.5px;
+  height: 16px;
+  margin-left: 1px;
+  background: var(--info);
+  animation: caret-blink 1s steps(1) infinite;
+  flex: 0 0 1.5px;
+}
+.cover-input.selected::after { display: none; }
+@keyframes caret-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* ---------- Итоги и стоимость ---------- */
+.sheet-total {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  /* отступ от слайдеров, как в макете (не перекрывать margin-top ниже!) */
+  margin: 24px 0 0;
+}
+.sheet-total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 8px;
+}
+.sheet-total-row > span:first-child {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: -0.32px;
+  color: var(--text);
+  white-space: nowrap;
+}
+.sheet-total-value {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: -0.32px;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.sheet-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.sheet-breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding-left: 12px;
+  font-size: 14px;
+  line-height: 18px;
+  letter-spacing: -0.28px;
+  color: var(--text-2);
+}
+.sheet-breakdown-row span:last-child {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.sheet-divider {
+  height: 8px;
+  position: relative;
+}
+.sheet-divider::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--divider);
+}
+
+/* «Стоимость»: как в макете — ровно 24px от линии разделителя */
+.sheet-price {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 28px;
+  color: var(--text);
+  margin-top: 24px; /* 24px от блока-разделителя (в визуале ~26 от линии — 1px допуск) */
+}
+.sheet-price-value {
+  display: flex;
+  align-items: baseline;
+  white-space: nowrap;
+}
+.sheet-price-value [data-price] {
+  font-variant-numeric: tabular-nums;
+}
+.sheet-price-per {
+  font-family: var(--font-text);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 18px;
+  letter-spacing: -0.28px;
+  color: var(--text-2);
+}
+
+/* ---------- Кнопки листа (в один ряд, как в макете 2089:1942) ---------- */
+.sheet-buttons {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  /* ровно 24px от «Стоимости» до кнопок (как в макете) */
+  padding: 24px 0 0;
+}
+.btn-secondary,
+.btn-primary {
+  flex: 1 1 0;
+  min-width: 56px;
+  width: auto;
+}
+.btn-secondary {
+  height: 56px;
+  min-height: 56px;
+  border-radius: 8px;
+  border: none;
+  background: var(--btn-secondary);
+  font-family: var(--font-text);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+  letter-spacing: -0.28px;
+  color: var(--text);
+  cursor: pointer;
+  transition: filter 0.12s ease, transform 0.12s ease;
+}
+.btn-secondary:hover { filter: brightness(0.97); }
+.btn-secondary:active { transform: scale(0.985); }
+
+.sheet-home {
+  flex: 0 0 34px;
+  height: 34px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 8px;
+}
+.sheet-home-bar {
+  width: 134px;
+  height: 5px;
+  border-radius: 100px;
+  background: var(--text);
+}
+
+/* ============================================================
+   Цифровая клавиатура iPhone (Number Pad)
+   ============================================================ */
+.ios-kb-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  pointer-events: none;
+  visibility: hidden;
+}
+.ios-kb-layer.is-open {
+  visibility: visible;
+  pointer-events: auto;
+}
+.ios-kb-dismiss {
+  flex: 1 1 auto;
+}
+.ios-kb {
+  flex: 0 0 auto;
+  background: #d1d5db;
+  transform: translateY(100%);
+  transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.ios-kb-layer.is-open .ios-kb {
+  transform: translateY(0);
+}
+.ios-kb-bar {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 16px;
+  background: #d5d8de;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.12);
+}
+.ios-kb-done {
+  border: none;
+  background: none;
+  padding: 8px 0;
+  font-family: var(--font-text);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
+  color: #007aff;
+  cursor: pointer;
+}
+.ios-kb-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px 6px;
+  padding: 8px 6px 6px;
+}
+.ios-kb-key {
+  height: 46px;
+  border: none;
+  border-radius: 5px;
+  background: #fff;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+  font-family: -apple-system, var(--font-text);
+  font-size: 25px;
+  font-weight: 400;
+  line-height: 1;
+  color: #000;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.ios-kb-key:active {
+  background: #c4c4c6;
+}
+.ios-kb-key-ghost {
+  background: transparent;
+  box-shadow: none;
+  pointer-events: none;
+}
+.ios-kb-key-back {
+  background: transparent;
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ios-kb-key-back:active {
+  background: rgba(0, 0, 0, 0.08);
+}
+.ios-kb-home {
+  height: 34px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 8px;
+}
